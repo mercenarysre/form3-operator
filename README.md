@@ -1,18 +1,13 @@
-# forma
-// TODO(user): Add simple overview of use/purpose
+# Form3 Kubernetes Operator
+Kubernetes Operator for managing the lifecycle of a Form3(https://form3.tech) Account.
 
-## Description
-// TODO(user): An in-depth paragraph about your project and overview of use
-
-## Getting Started
-
-### Prerequisites
+## Prerequisites
 - go version v1.24.0+
 - docker version 17.03+.
 - kubectl version v1.11.3+.
 - Access to a Kubernetes v1.11.3+ cluster.
 
-### To Deploy on the cluster
+- ### To Deploy on the cluster
 **Build and push your image to the location specified by `IMG`:**
 
 ```sh
@@ -65,5 +60,3 @@ make uninstall
 ```sh
 make undeploy
 ```
-
-### To Uninstall
