@@ -1,0 +1,9 @@
+apiVersion: account.form3.tech/v1
+kind: Account
+metadata:
+  labels:
+    app.kubernetes.io/name: forma
+    app.kubernetes.io/managed-by: kustomize
+  name: account-sample
+spec:
+  # TODO(user): Add fields here

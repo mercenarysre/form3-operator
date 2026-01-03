@@ -1,0 +1,90 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: v0.18.0
+  name: accounts.account.form3.tech
+spec:
+  group: account.form3.tech
+  names:
+    kind: Account
+    listKind: AccountList
+    plural: accounts
+    singular: account
+  scope: Namespaced
+  versions:
+  - name: v1
+    schema:
+      openAPIV3Schema:
+        description: Account is the Schema for the Form3 accounts API.
+        properties:
+          apiVersion:
+            description: |-
+              APIVersion defines the versioned schema of this representation of an object.
+              Servers should convert recognized schemas to the latest internal value, and
+              may reject unrecognized values.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources
+            type: string
+          kind:
+            description: |-
+              Kind is a string value representing the REST resource this object represents.
+              Servers may infer this from the endpoint the client submits requests to.
+              Cannot be updated.
+              In CamelCase.
+              More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: AccountSpec defines the desired state of a Form3 Account.
+            properties:
+              bankID:
+                type: string
+              bankIDCode:
+                type: string
+              bic:
+                type: string
+              country:
+                type: string
+              organisationID:
+                description: |-
+                  INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
+                  Important: Run "make" to regenerate code after modifying this file
+                type: string
+            required:
+            - bankID
+            - bankIDCode
+            - bic
+            - country
+            - organisationID
+            type: object
+          status:
+            description: AccountStatus defines the observed state of a Form3 Account.
+            properties:
+              accountNumber:
+                type: string
+              baseCurrency:
+                type: string
+              iban:
+                type: string
+              id:
+                description: |-
+                  INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
+                  Important: Run "make" to regenerate code after modifying this file
+                type: string
+              message:
+                type: string
+              state:
+                type: string
+            required:
+            - accountNumber
+            - baseCurrency
+            - iban
+            - id
+            type: object
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
