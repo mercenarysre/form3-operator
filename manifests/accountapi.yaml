@@ -1,0 +1,54 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: accountapi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: accountapi
+  template:
+    metadata:
+      labels:
+        app: accountapi
+    spec:
+      containers:
+        - name: accountapi
+          image: form3tech/interview-accountapi:v1.0.0-50-ga251d4fc
+          ports:
+            - containerPort: 8080
+          env:
+            - name: VAULT_ADDR
+              value: http://vault:8200
+            - name: VAULT_TOKEN
+              value: 8fb95528-57c6-422e-9722-d2147bcba8ed
+            - name: PSQL_USER
+              value: root
+            - name: PSQL_PASSWORD
+              value: password
+            - name: PSQL_HOST
+              value: postgresql
+            - name: PSQL_PORT
+              value: "5432"
+            - name: STACK_NAME
+              value: f3-interview-accountapi
+            - name: DATABASE_HOST
+              value: postgresql
+            - name: DATABASE_SSL_MODE
+              value: disable
+            - name: DATABASE_USERNAME
+              value: interview_accountapi_user
+            - name: DATABASE_PASSWORD
+              value: "123"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: accountapi
+spec:
+  selector:
+    app: accountapi
+  ports:
+    - port: 8080
+      targetPort: 8080
+  type: ClusterIP
