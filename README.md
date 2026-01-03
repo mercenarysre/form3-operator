@@ -15,8 +15,7 @@ chmod +x run.sh
 ./run.sh
 ```
 
-### Implementation
-
+## Implementation
 **Testing the Operator**
 ```sh
 make test
@@ -52,7 +51,7 @@ kubectl get rolebindings
 kubectl apply -k config/samples/
 ```
 
-### To Uninstall
+## To Uninstall
 **Delete the instances (Custom Resources) from the cluster**
 ```sh
 kubectl delete -k config/samples/
