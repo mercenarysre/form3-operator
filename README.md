@@ -25,49 +25,45 @@ make test
 **Deploy Kubernetes Manifests To A Kind Cluster, this provisions a Fake Form3 Account API**
 ```sh
 cd manifests
-kubectl apply -f accountapi.yaml
-kubectl apply -f postgresql.yaml
-kubectl apply -f vault.yaml
+kubectl apply -f .
 ```
 
 **Install the Operator**
 ```sh
 export USERNAME=tomiwa97
-make docker-build docker-push IMG=docker.io/tomiwa97/form3-operator:v1.0.0
-kind load docker.io/tomiwa97/form3-operator:v1.0.0
-make deploy IMG=docker.io/tomiwa97/memcached-operator:v1.0.0
+make docker-build docker-push IMG=docker.io/$USERNAME/form3-operator:v1.0.0
+kind load docker.io/$USERNAME/form3-operator:v1.0.0
+make deploy IMG=docker.io/$USERNAME/memcached-operator:v1.0.0
 ```
 
 **Fetching Operator CRD, Deployments, Pods, ClusterRoles, ClusterRolesBindings, Roles, RoleBindings**
 ```sh
 kubectl get crds
-kubectl get crds
+kubectl get deployments
+kubectl get pods
+kubectl get clusterroles | grep forma
+kubectl get clusterrolebindings | grep forma
+kubectl get roles
+kubectl get rolebindings
 ```
 
-**Create instances of your solution**
-You can apply the samples (examples) from the config/sample:
-
+**Create instances (Custom Resources) of a Form3 Account by applying samples from the config/samples directory**
 ```sh
 kubectl apply -k config/samples/
 ```
 
->**NOTE**: Ensure that the samples has default values to test it out.
-
 ### To Uninstall
-**Delete the instances (CRs) from the cluster:**
-
+**Delete the instances (Custom Resources) from the cluster**
 ```sh
 kubectl delete -k config/samples/
 ```
 
-**Delete the APIs(CRDs) from the cluster:**
-
+**Delete the APIs(CRDs) from the cluster**
 ```sh
 make uninstall
 ```
 
-**UnDeploy the controller from the cluster:**
-
+**UnDeploy the controller from the cluster**
 ```sh
 make undeploy
 ```
