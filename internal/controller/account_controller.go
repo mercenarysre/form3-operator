@@ -19,8 +19,8 @@ package controller
 import (
 	"context"
 
-	"github.com/form3tech-oss/go-form3/v3/pkg/generated/models"
 	form3 "github.com/form3tech-oss/go-form3/v7/pkg/form3"
+	"github.com/form3tech-oss/go-form3/v7/pkg/generated/models"
 	"github.com/go-openapi/strfmt"
 	accountv1 "github.com/mercenarysre/forma-operator/api/v1"
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
