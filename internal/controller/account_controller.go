@@ -19,7 +19,7 @@ package controller
 import (
 	"context"
 
-	form3 "github.com/form3tech-oss/go-form3/v7/pkg/form3"
+	"github.com/form3tech-oss/go-form3/v7/pkg/form3"
 	"github.com/form3tech-oss/go-form3/v7/pkg/generated/models"
 	"github.com/go-openapi/strfmt"
 	accountv1 "github.com/mercenarysre/forma-operator/api/v1"
@@ -136,9 +136,9 @@ func (r *AccountReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 			OrganisationID: &orgID,
 			Attributes: &models.AccountAttributes{
 				Country:    &country,
-				BankID:     account.Spec.BankID,
-				BankIDCode: account.Spec.BankIDCode,
-				Bic:        account.Spec.BIC,
+				BankID:     &account.Spec.BankID,
+				BankIDCode: &account.Spec.BankIDCode,
+				Bic:        &account.Spec.BIC,
 			},
 		}
 
@@ -146,7 +146,7 @@ func (r *AccountReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 			CreateAccount().
 			WithContext(ctx).
 			WithData(form3Account).
-			Do()
+			Execute()
 		if err != nil {
 			logger.Error(err, "failed to create Form3 account")
 			account.Status.State = "Failed"

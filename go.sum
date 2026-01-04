@@ -39,6 +39,8 @@ github.com/felixge/httpsnoop v1.0.4 h1:NFTV2Zj1bL4mc9sqWACXbQFVBBg2W3GPvqp8/ESS2
 github.com/felixge/httpsnoop v1.0.4/go.mod h1:m8KPJKqk1gH5J9DgRY2ASl2lWCfGKXixSwevea8zH2U=
 github.com/form3tech-oss/go-form3/v3 v3.0.2 h1:uTxXSlU8eAJ2knmu8Av2CgemjImiZ3PLPWUI/jEkVvQ=
 github.com/form3tech-oss/go-form3/v3 v3.0.2/go.mod h1:2Fl3DZQm2kNsflKIMJPQAaIT4PudDJ0sIZN3YvWzRxI=
+github.com/form3tech-oss/go-form3/v7 v7.1.0 h1:unq0MLdOLRLzwQYbsaaltJcPzvquFfLJ1pRc2qFN0m8=
+github.com/form3tech-oss/go-form3/v7 v7.1.0/go.mod h1:Vp8i2xMKcwLH5A3u2hoyQzNm8yOLTPmEzBlKzEuOzVU=
 github.com/fsnotify/fsnotify v1.7.0 h1:8JEhPFa5W2WU7YfeZzPNqzMP6Lwt7L2715Ggo0nosvA=
 github.com/fsnotify/fsnotify v1.7.0/go.mod h1:40Bi/Hjc2AVfZrqy+aj+yEI+/bRxZnMJyTJwOpGvigM=
 github.com/fxamacker/cbor/v2 v2.7.0 h1:iM5WgngdRBanHcxugY4JySA0nk1wZorNOpTgCMedv5E=
