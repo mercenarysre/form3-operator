@@ -1,5 +1,5 @@
 # Form3 Kubernetes Operator
-Kubernetes Operator for managing the lifecycle of a [Form3](https://form3.tech) Account.
+Kubernetes Operator for managing the lifecycle(creation and deletion) of a [Form3](https://form3.tech) Account.
 
 ## Prerequisites
 - Go version v1.24.0+
