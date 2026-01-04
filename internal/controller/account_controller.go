@@ -18,17 +18,16 @@ package controller
 
 import (
 	"context"
+
+	"github.com/form3tech-oss/go-form3/v3/pkg/generated/models"
+	form3 "github.com/form3tech-oss/go-form3/v7/pkg/form3"
 	"github.com/go-openapi/strfmt"
+	accountv1 "github.com/mercenarysre/forma-operator/api/v1"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/runtime"
-        apierrors "k8s.io/apimachinery/pkg/api/errors"
-        "k8s.io/apimachinery/pkg/types"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 	"sigs.k8s.io/controller-runtime/pkg/log"
-	"github.com/form3tech-oss/go-form3/v3/pkg/form3"
-        "github.com/form3tech-oss/go-form3/v3/pkg/generated/models"
-	accountv1 "github.com/mercenarysre/forma-operator/api/v1"
-
 )
 
 const accountFinalizer = "account.form3.tech/finalizer"
@@ -36,27 +35,27 @@ const accountFinalizer = "account.form3.tech/finalizer"
 // AccountReconciler reconciles a Account object
 type AccountReconciler struct {
 	client.Client
-	Scheme *runtime.Scheme
-        Form3Client *form3.Form3
+	Scheme      *runtime.Scheme
+	Form3Client *form3.F3
 }
 
 func containsString(slice []string, s string) bool {
-    for _, item := range slice {
-        if item == s {
-            return true
-        }
-    }
-    return false
+	for _, item := range slice {
+		if item == s {
+			return true
+		}
+	}
+	return false
 }
 
 func removeString(slice []string, s string) []string {
-    var result []string 
-    for _, item := range slice {
-        if item != s {
-            result = append(result, item)
-        }
-    }
-    return result 
+	var result []string
+	for _, item := range slice {
+		if item != s {
+			result = append(result, item)
+		}
+	}
+	return result
 }
 
 // +kubebuilder:rbac:groups=account.form3.tech,resources=accounts,verbs=get;list;watch;create;update;patch;delete
@@ -78,93 +77,96 @@ func (r *AccountReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 	logger := log.FromContext(ctx)
 
 	account := &accountv1.Account{}
-        if err := r.Get(ctx, req.NamespacedName, account); err != nil {
-	    if apierrors.IsNotFound(err) {
-                return ctrl.Result{}, nil
-            }
-	    return ctrl.Result{}, err
-        }
+	if err := r.Get(ctx, req.NamespacedName, account); err != nil {
+		if apierrors.IsNotFound(err) {
+			return ctrl.Result{}, nil
+		}
+		return ctrl.Result{}, err
+	}
 
-        // Delete Logic
-        if !account.DeletionTimestamp.IsZero() {
-            if containsString(account.Finalizers, accountFinalizer) {
+	// Delete Logic
+	if !account.DeletionTimestamp.IsZero() {
+		if containsString(account.Finalizers, accountFinalizer) {
 
-                if account.Status.ID != "" {
-                    _, err := r.Form3Client.Accounts.
-                        DeleteAccount().
-                        WithContext(ctx).
-                        WithID(strfmt.UUID(account.Status.ID)).
-                        Do()
+			if account.Status.ID != "" {
+				_, err := r.Form3Client.Accounts.
+					DeleteAccount().
+					WithContext(ctx).
+					WithID(strfmt.UUID(account.Status.ID)).
+					Do()
 
-                    if err != nil {
-                        logger.Error(err, "failed to delete Form3 account")
-                        account.Status.State = "Failed"
-                        account.Status.Message = err.Error()
-                        _ = r.Status().Update(ctx, account)
-                        return ctrl.Result{}, err
-                    }
-                }
+				if err != nil {
+					logger.Error(err, "failed to delete Form3 account")
+					account.Status.State = "Failed"
+					account.Status.Message = err.Error()
+					_ = r.Status().Update(ctx, account)
+					return ctrl.Result{}, err
+				}
+			}
 
-                account.Finalizers = removeString(account.Finalizers, accountFinalizer)
-                if err := r.Update(ctx, account); err != nil {
-                    return ctrl.Result{}, err
-                }
-            }
-            return ctrl.Result{}, nil
-        }
+			account.Finalizers = removeString(account.Finalizers, accountFinalizer)
+			if err := r.Update(ctx, account); err != nil {
+				return ctrl.Result{}, err
+			}
+		}
+		return ctrl.Result{}, nil
+	}
 
-        // Add finalizer
-        if !containsString(account.Finalizers, accountFinalizer) {
-            account.Finalizers = append(account.Finalizers, accountFinalizer)
-            if err := r.Update(ctx, account); err != nil {
-                return ctrl.Result{Requeue: true}, nil
-            }
-        }
+	// Add finalizer
+	if !containsString(account.Finalizers, accountFinalizer) {
+		account.Finalizers = append(account.Finalizers, accountFinalizer)
+		if err := r.Update(ctx, account); err != nil {
+			return ctrl.Result{Requeue: true}, nil
+		}
+	}
 
-        // Create Logic
-        if account.Status.State == "" {
-            account.Status.State = "Pending"
-            account.Status.Message = "Creating Form3 account"
-            if err := r.Status().Update(ctx, account); err != nil {
-                return ctrl.Result{}, err
-            }
+	// Create Logic
+	if account.Status.State == "" {
+		account.Status.State = "Pending"
+		account.Status.Message = "Creating Form3 account"
+		if err := r.Status().Update(ctx, account); err != nil {
+			return ctrl.Result{}, err
+		}
 
-            form3Account := &models.Account{
-                Type: "accounts",
-                OrganisationID: account.Spec.OrganisationID,
-                Attributes: &models.AccountAttributes{
-                    Country: account.Spec.Country,
-                    BankID: account.Spec.BankID,
-                    BankIDCode: account.Spec.BankIDCode,
-                    BIC: account.Spec.BIC,
-                },
-            }
+		orgID := strfmt.UUID(account.Spec.OrganisationID)
+		country := account.Spec.Country
 
-            resp, err := r.Form3Client.Accounts.
-                CreateAccount().
-                WithContext(ctx).
-                WithData(form3Account).
-                Do()
-            if err != nil {
-                logger.Error(err, "failed to create Form3 account")
-                account.Status.State = "Failed"
-                account.Status.Message = err.Error()
-                _ = r.Status().Update(ctx, account)
-                return ctrl.Result{}, err
-            }
+		form3Account := &models.Account{
+			Type:           "accounts",
+			OrganisationID: &orgID,
+			Attributes: &models.AccountAttributes{
+				Country:    &country,
+				BankID:     account.Spec.BankID,
+				BankIDCode: account.Spec.BankIDCode,
+				Bic:        account.Spec.BIC,
+			},
+		}
 
-            account.Status.ID = resp.Data.ID.String()
-            account.Status.IBAN = resp.Data.IBAN
-            account.Status.AccountNumber = resp.Data.AccountNumber
-            account.Status.BaseCurrency = resp.Data.BaseCurrency
-            account.Status.State = "Ready"
-            account.Status.Message = "Account successfully created"
+		resp, err := r.Form3Client.Accounts.
+			CreateAccount().
+			WithContext(ctx).
+			WithData(form3Account).
+			Do()
+		if err != nil {
+			logger.Error(err, "failed to create Form3 account")
+			account.Status.State = "Failed"
+			account.Status.Message = err.Error()
+			_ = r.Status().Update(ctx, account)
+			return ctrl.Result{}, err
+		}
 
-            if err := r.Status().Update(ctx, account); err != nil {
-                return ctrl.Result{}, err
-            }
-        }
-        return ctrl.Result{}, nil
+		account.Status.ID = resp.Data.ID.String()
+		account.Status.IBAN = resp.Data.IBAN
+		account.Status.AccountNumber = resp.Data.AccountNumber
+		account.Status.BaseCurrency = resp.Data.BaseCurrency
+		account.Status.State = "Ready"
+		account.Status.Message = "Account successfully created"
+
+		if err := r.Status().Update(ctx, account); err != nil {
+			return ctrl.Result{}, err
+		}
+	}
+	return ctrl.Result{}, nil
 }
 
 // SetupWithManager sets up the controller with the Manager.

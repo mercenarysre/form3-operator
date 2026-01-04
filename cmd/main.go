@@ -19,10 +19,11 @@ package main
 import (
 	"crypto/tls"
 	"flag"
+	"net/url"
 	"os"
-        "net/url"
-        "github.com/form3tech-oss/go-form3/v3/pkg/form3"
 	"path/filepath"
+
+	"github.com/form3tech-oss/go-form3/v3/pkg/form3"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.
@@ -180,23 +181,23 @@ func main() {
 		})
 	}
 
-        form3URL := os.Getenv("FORM3_API_URL")
-        if form3URL == "" {
-            setupLog.Error(nil, "FORM3_API_URL is not set")
-            os.Exit(1)
+	form3URL := os.Getenv("FORM3_API_URL")
+	if form3URL == "" {
+		setupLog.Error(nil, "FORM3_API_URL is not set")
+		os.Exit(1)
 	}
 
-        u, err := url.Prase(form3URL)
-        if err != nil {
-            setupLog.Error(err, "invalid FORM3_API_URL")
-            os.Exit(1)
-        }
-
-        form3Client, err := form3.New(form3.WithBaseURL(*u))
+	u, err := url.Parse(form3URL)
 	if err != nil {
-            setupLog.Error(err, "unable to create Form3 client")
-	    os.Exit(1)
-        }
+		setupLog.Error(err, "invalid FORM3_API_URL")
+		os.Exit(1)
+	}
+
+	form3Client, err := form3.New(form3.WithBaseURL(*u))
+	if err != nil {
+		setupLog.Error(err, "unable to create Form3 client")
+		os.Exit(1)
+	}
 
 	mgr, err := ctrl.NewManager(ctrl.GetConfigOrDie(), ctrl.Options{
 		Scheme:                 scheme,
@@ -223,9 +224,9 @@ func main() {
 	}
 
 	if err := (&controller.AccountReconciler{
-		Client: mgr.GetClient(),
-		Scheme: mgr.GetScheme(),
-                Form3Client: form3Client,
+		Client:      mgr.GetClient(),
+		Scheme:      mgr.GetScheme(),
+		Form3Client: form3Client,
 	}).SetupWithManager(mgr); err != nil {
 		setupLog.Error(err, "unable to create controller", "controller", "Account")
 		os.Exit(1)
