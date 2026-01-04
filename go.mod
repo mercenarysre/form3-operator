@@ -3,7 +3,6 @@ module github.com/mercenarysre/forma-operator
 go 1.24.0
 
 require (
-	github.com/form3tech-oss/go-form3/v3 v3.0.2
 	github.com/form3tech-oss/go-form3/v7 v7.1.0
 	github.com/go-openapi/strfmt v0.23.0
 	github.com/onsi/ginkgo/v2 v2.22.0

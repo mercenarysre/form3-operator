@@ -23,7 +23,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/form3tech-oss/go-form3/v3/pkg/form3"
+	"github.com/form3tech-oss/go-form3/v7/pkg/form3"
 
 	// Import all Kubernetes client auth plugins (e.g. Azure, GCP, OIDC, etc.)
 	// to ensure that exec-entrypoint and run can make use of them.

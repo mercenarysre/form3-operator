@@ -136,17 +136,17 @@ func (r *AccountReconciler) Reconcile(ctx context.Context, req ctrl.Request) (ct
 			OrganisationID: &orgID,
 			Attributes: &models.AccountAttributes{
 				Country:    &country,
-				BankID:     &account.Spec.BankID,
-				BankIDCode: &account.Spec.BankIDCode,
-				Bic:        &account.Spec.BIC,
+				BankID:     account.Spec.BankID,
+				BankIDCode: account.Spec.BankIDCode,
+				Bic:        account.Spec.BIC,
 			},
 		}
 
 		resp, err := r.Form3Client.Accounts.
 			CreateAccount().
 			WithContext(ctx).
-			WithData(form3Account).
-			Execute()
+			WithData(*form3Account).
+			Do()
 		if err != nil {
 			logger.Error(err, "failed to create Form3 account")
 			account.Status.State = "Failed"
