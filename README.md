@@ -66,3 +66,5 @@ make uninstall
 ```sh
 make undeploy
 ```
+
+## ToDo (Write Tests for the Operator)
